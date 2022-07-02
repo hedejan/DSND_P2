@@ -51,11 +51,13 @@ def clean_categories_data(df):
     row = categories.iloc[0,:]
     category_colnames = row.str.extract(r'(\w*)-\d')[0].values
     categories.columns = category_colnames
-    
     for column in categories:
         categories[column] = categories.loc[:,column].str.extract(r'\w*-(\d)')[0]
         categories[column] = categories[column].astype(int)
+    categories.related.replace(2,1,inplace=True) #assume 2 was supposed to be 1
+    categories.drop(columns='child_alone', inplace=True) # single class
     
+    # drop original and replace by clean categories
     df.drop(columns='categories', inplace=True)
     df = pd.concat([df,categories],axis=1)
     df.drop_duplicates(inplace=True)
